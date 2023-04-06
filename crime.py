@@ -22,18 +22,18 @@ ratio_line = {
 
 # the ratio of ridership by race
 ratio_race = {
-    "Hispanic" : 0.66,
-    "Black" : 0.15,
-    "White" : 0.08,
-    "Asian" : 0.06,
+    "Hispanic" : 0.44,
+    "Black" : 0.18,
+    "White" : 0.21,
+    "Asian" : 0.10,
     "Islander" : 0.01,
     "Native" : 0.01,
-    "Other" : 0.04,
+    "Other" : 0.06,
 }
 
 ratio_sex = {
-    "M" : 0.46,
-    "F" : 0.53
+    "M" : 0.53,
+    "F" : 0.46
 }
 
 # the ratio of ridership per hour
@@ -177,12 +177,28 @@ ratio_crime = (crime_count / year_gap) / total_ridership
 result = ratio_crime / (ratio_total_time * ratio_line[line] * ratio_race[race] * ratio_sex[gender])
 
 
+if line == "RED|METRO CENTER|UNION|PURPLE":
+    line = "RED|PURPLE"
+elif line == "EXPO|METRO CENTER":
+    line = "EXPO"
+elif line == "BLUE|METRO CENTER":
+    line = "BLUE"
+elif line == "GOLD|UNION":
+    line = "GOLD"
+
+if gender == "F":
+    gender = "female"
+elif gender == "M":
+    gender = "male"
+    
 ''' Output '''
 print("\n-----------PREDICT RESULT-----------")
-print("the probability of a crime : {:.6f}%".format(result * 100))
+print("You're a %s %s and riding %s line at %s:00-%s:00"%(race, gender, line, time[0], time[1]) )
+print("the probability of a crime : {:.4f} ‱".format(result * 10000))
 
 print("If a crime occurs, it may be :", end=" ")
 crm_cd_avg = cr["Crm Cd"].mean()
+# print(crm_cd_avg)
 if crm_cd_avg < 110+170:
     print("a very violent crime")
 elif 110+170 <= crm_cd_avg < 110+170*2:
@@ -191,3 +207,43 @@ elif 110+170*2 <= crm_cd_avg < 110+170*3:
     print("a misdemeanor")
 else:
     print("a minor offense")
+    
+top = cr[["Crm Cd"]].sort_values('Crm Cd').head(3)
+top3 = []
+for i in range(3):
+    top3.append(top.iloc[i,0])
+
+crm_cd = {
+    110 : "CRIMINAL HOMICIDE",
+    113 : "MANSLAUGHTER, NEGLIGENT",
+    121 : "RAPE, FORCIBLE",
+    122 : "RAPE, ATTEMPTED",
+    210 : "ROBBERY",
+    220 : "ATTEMPTED ROBBERY",
+    230 : "ASSAULT WITH DEADLY WEAPON, AGGRAVATED ASSAULT",
+    231 : "ASSAULT WITH DEADLY WEAPON ON POLICE OFFICER",
+    236 : "INTIMATE PARTNER - AGGRAVATED ASSAULT",
+    237 : "CHILD NEGLECT (SEE 300 W.I.C.)",
+    250 : "SHOTS FIRED AT MOVING VEHICLE, TRAIN OR AIRCRAFT",
+    310 : "BURGLARY",
+    330 : "BURGLARY FROM VEHICLE",
+    331 : "THEFT FROM MOTOR VEHICLE - GRAND ($950.01 AND OVER)",
+    341 : "THEFT-GRAND ($950.01 & OVER)EXCPT,GUNS,FOWL,LIVESTK,PROD",
+    350 : "THEFT, PERSON",
+    351 : "PURSE SNATCHING",
+    352 : "PICKPOCKET",
+    353 : "DRUNK ROLL",
+    354 : "THEFT OF IDENTITY",
+    410: "BURGLARY FROM VEHICLE, ATTEMPTED",
+    420 : "THEFT FROM MOTOR VEHICLE - PETTY ($950 & UNDER)",
+    433 : "DRIVING WITHOUT OWNER CONSENT",
+    434 : "FALSE IMPRISONMENT",
+    437 : "RESISTING ARREST",
+    440 : "THEFT PLAIN - PETTY ($950 & UNDER)"    
+}
+
+
+print("\nThe worst three cases was:")
+print("1. %s"%(crm_cd[top3[0]]) ) 
+print("2. %s"%(crm_cd[top3[1]]) )
+print("3. %s"%(crm_cd[top3[2]]) )
