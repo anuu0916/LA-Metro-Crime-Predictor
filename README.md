@@ -62,7 +62,7 @@ crime_count / total_crime_num
 = `(crime_count / year_gap) / total_ridership`  
 
 **P(B|A)**  
-= P(AnB)/P(B)  
+= P(AnB)/P()
 = `(crime_count / year_gap / total_ridership) / (ratio_total_time * ratio_line[line] * ratio_race[race] * ratio_sex[gender])`
 
 
